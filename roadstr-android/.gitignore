@@ -1,0 +1,21 @@
+# Built outputs
+/build/
+/app/build/
+
+# Gradle
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+local.properties
+
+# Signing credentials
+keystore.properties
+*.jks
+*.keystore
+
+# OS files
+.DS_Store
+Thumbs.db
