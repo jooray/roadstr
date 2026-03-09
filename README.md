@@ -38,7 +38,7 @@ Events are published as Nostr events (kind 1315 for reports, 1316 for confirmati
 
 ### Web
 
-Zero-build vanilla JavaScript interface with Leaflet maps. View events, report new ones, and confirm/deny existing reports. Works with NIP-07 browser extensions (Alby, nos2x) or generates ephemeral keys.
+Zero-build vanilla JavaScript interface with Leaflet maps, using OpenFreeMap vector tiles by default and automatic raster fallback during map startup failures. View events, report new ones, and confirm/deny existing reports. Works with NIP-07 browser extensions (Alby, nos2x) or generates ephemeral keys.
 
 ### Android (OsmAnd Plugin)
 
@@ -55,7 +55,7 @@ Integrates directly with the OsmAnd navigation app via AIDL. Events appear as co
 ## Architecture
 
 - **Android**: Kotlin, service-based architecture with foreground service, WebSocket relay connections, geohash-based queries, AIDL integration with OsmAnd
-- **Web**: Vanilla JS, no build system, Leaflet maps, nostr-tools
+- **Web**: Vanilla JS, no build system, Leaflet maps with configurable OpenFreeMap vector or legacy raster basemaps, nostr-tools
 - **Protocol**: Nostr events (NIP-01) with multi-level geohash tags, NIP-40 expiration, compact binary encoding for mesh
 
 Both platforms share the same event format and remain compatible.
@@ -74,7 +74,7 @@ APK output: `app/build/outputs/apk/debug/app-debug.apk`
 
 ### Web
 
-No build required. Open `web/index.html` in a browser.
+No build required. Open `roadstr-web/index.html` in a browser. Basemap mode is configured in `roadstr-web/js/config.js`: set `MAP_DISPLAY_CONFIG.mode` to `'vector'` (default OpenFreeMap) or `'raster'` (legacy Leaflet raster tiles). In vector mode, change `MAP_DISPLAY_CONFIG.vector.style` or `styleUrl` to switch the OpenFreeMap style source.
 
 ## Protocol
 

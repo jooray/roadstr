@@ -1,6 +1,12 @@
 // Leaflet map setup and marker management
 
+import { MAP_DISPLAY_CONFIG, getConfiguredMapMode, getConfiguredVectorStyleUrl } from './config.js';
+
+const OPENFREEMAP_ATTRIBUTION = '&copy; <a href="https://openfreemap.org">OpenFreeMap</a> &copy; <a href="https://www.openmaptiles.org/">OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+const VECTOR_BASEMAP_LOAD_TIMEOUT_MS = 10000;
+
 let map = null;
+let baseLayer = null;
 let markers = new Map(); // eventId -> L.Marker
 let onMapClick = null;
 let onMarkerConfirm = null;
@@ -19,12 +25,7 @@ export function initMap(containerId, options = {}) {
     zoomControl: false
   }).setView([lat, lon], zoom);
 
-  // Light map tiles for better visibility
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 20
-  }).addTo(map);
+  addConfiguredBaseLayer();
 
   // Add zoom control to bottom right
   L.control.zoom({
@@ -40,7 +41,7 @@ export function initMap(containerId, options = {}) {
     }).on('markgeocode', (e) => {
       map.setView(e.geocode.center, 15);
     }).addTo(map);
-    
+
     // Style the geocoder input
     const geocoderInput = document.querySelector('.leaflet-control-geocoder-form input');
     if (geocoderInput) {
@@ -87,6 +88,97 @@ export function initMap(containerId, options = {}) {
   });
 
   return map;
+}
+
+function addConfiguredBaseLayer() {
+  const mode = getConfiguredMapMode();
+
+  if (mode === 'vector' && tryAddVectorBaseLayer()) {
+    return;
+  }
+
+  addRasterBaseLayer();
+}
+
+function tryAddVectorBaseLayer() {
+  if (!L.maplibreGL || !window.maplibregl) {
+    console.warn('[roadstr] MapLibre GL Leaflet is unavailable, falling back to raster tiles');
+    return false;
+  }
+
+  const styleUrl = getConfiguredVectorStyleUrl();
+  let vectorLoaded = false;
+  let fallbackHandled = false;
+
+  const vectorLayer = L.maplibreGL({
+    style: styleUrl,
+    interactive: false,
+    pane: 'tilePane',
+    attributionControl: {
+      customAttribution: OPENFREEMAP_ATTRIBUTION
+    }
+  }).addTo(map);
+
+  baseLayer = vectorLayer;
+
+  const glMap = typeof vectorLayer.getMaplibreMap === 'function'
+    ? vectorLayer.getMaplibreMap()
+    : null;
+
+  const fallbackToRaster = (reason, error = null) => {
+    if (vectorLoaded || fallbackHandled) return;
+    fallbackHandled = true;
+
+    if (error) {
+      console.error(`[roadstr] ${reason}`, error);
+    } else {
+      console.warn(`[roadstr] ${reason}`);
+    }
+
+    if (!MAP_DISPLAY_CONFIG.fallbackToRasterOnError) {
+      return;
+    }
+
+    removeBaseLayer();
+    addRasterBaseLayer();
+  };
+
+  if (!glMap) {
+    fallbackToRaster('OpenFreeMap vector layer did not expose a MapLibre instance');
+    return true;
+  }
+
+  const loadTimeout = window.setTimeout(() => {
+    fallbackToRaster(`OpenFreeMap vector basemap did not finish loading within ${VECTOR_BASEMAP_LOAD_TIMEOUT_MS}ms`);
+  }, VECTOR_BASEMAP_LOAD_TIMEOUT_MS);
+
+  glMap.once('load', () => {
+    vectorLoaded = true;
+    window.clearTimeout(loadTimeout);
+    console.info(`[roadstr] OpenFreeMap vector basemap loaded (${styleUrl})`);
+  });
+
+  glMap.on('error', (error) => {
+    fallbackToRaster('OpenFreeMap vector basemap failed before initial load', error);
+  });
+
+  return true;
+}
+
+function addRasterBaseLayer() {
+  removeBaseLayer();
+  baseLayer = L.tileLayer(
+    MAP_DISPLAY_CONFIG.raster.tileUrl,
+    MAP_DISPLAY_CONFIG.raster.options
+  ).addTo(map);
+  console.info('[roadstr] Raster basemap active');
+}
+
+function removeBaseLayer() {
+  if (baseLayer && map && map.hasLayer(baseLayer)) {
+    map.removeLayer(baseLayer);
+  }
+  baseLayer = null;
 }
 
 /**

@@ -382,6 +382,12 @@ body {
   z-index: 1;
 }
 
+/* Keep the vector basemap purely visual so Leaflet markers/popups/report clicks keep working */
+.leaflet-gl-layer,
+.leaflet-gl-layer .maplibregl-canvas {
+  pointer-events: none;
+}
+
 /* Locate control icon styling - standard map button look */
 .leaflet-control-locate a {
   font-size: 16px !important;
@@ -433,22 +439,9 @@ body {
 }
 
 /* Floating Action Button */
+/* Hidden for now: reporting is done by clicking directly on the map. */
 .fab-report {
-  position: fixed;
-  bottom: 160px;
-  right: 24px;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  border: none;
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
-  cursor: pointer;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-spring);
+  display: none !important;
 }
 
 .fab-report:hover {
