@@ -4,9 +4,15 @@
 
 Roadstr allows drivers to report and view road events (police, accidents, construction, hazards) using the Nostr protocol. Events are cryptographically signed, verifiable, and shared across a decentralized network of relays. No central authority, no tracking, no data harvesting.
 
+### [Web Version](https://cypherpunk.today/static/roadstr)
+
 ![Web Interface](images/screenshot-web.png)
 
+### Android Version
+
 ![Android Integration](images/screenshot-android.png)
+
+Left: Android app, Right: OsmAnd integration showing events and Report button
 
 ## Features
 
