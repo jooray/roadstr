@@ -48,7 +48,7 @@ Integrates directly with the OsmAnd navigation app via AIDL. Events appear as co
 
 **Web version**: [Try it online](https://cypherpunk.today/static/roadstr)
 
-**Android APK**: Available in [GitHub Releases](https://github.com/jooray/roadstr/releases)
+**Android app**: Install from [Zapstore](https://zapstore.dev/apps/com.roadstr), or download the APK from [GitHub Releases](https://github.com/jooray/roadstr/releases)
 
 (Requires OsmAnd app installed to view)
 
