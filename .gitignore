@@ -1,1 +1,6 @@
 .env
+
+# Local agent / assistant instructions (not for the public repo)
+CLAUDE.md
+AGENTS.md
+.claude/
