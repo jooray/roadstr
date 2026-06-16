@@ -8,7 +8,7 @@ Roadstr allows drivers to report and view road events (police, accidents, constr
 
 ![Web Interface](images/screenshot-web.png)
 
-### Android Version
+### Android Version — [Install from Zapstore](https://zapstore.dev/apps/com.roadstr)
 
 ![Android Integration](images/screenshot-android.png)
 
