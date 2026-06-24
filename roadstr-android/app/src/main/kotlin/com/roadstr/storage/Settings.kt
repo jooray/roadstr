@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.roadstr.util.UnitSystem
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -63,6 +64,10 @@ class Settings(context: Context) {
         get() = prefs.getString(KEY_OSMAND_PACKAGE, "net.osmand.plus") ?: "net.osmand.plus"
         set(value) = prefs.edit().putString(KEY_OSMAND_PACKAGE, value).apply()
 
+    var unitSystem: UnitSystem
+        get() = UnitSystem.fromStored(prefs.getString(KEY_UNIT_SYSTEM, null))
+        set(value) = prefs.edit().putString(KEY_UNIT_SYSTEM, value.name.lowercase()).apply()
+
     companion object {
         private const val TAG = "Settings"
         private const val PREFS_NAME = "roadstr_prefs"
@@ -76,6 +81,7 @@ class Settings(context: Context) {
         private const val KEY_SPEED_THRESHOLD = "query_speed_threshold"
         private const val KEY_VISIBLE_TYPES = "visible_types"
         private const val KEY_OSMAND_PACKAGE = "osmand_package"
+        private const val KEY_UNIT_SYSTEM = "unit_system"
 
         val DEFAULT_RELAYS = listOf(
             "wss://relay.damus.io",

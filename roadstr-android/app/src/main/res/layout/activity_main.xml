@@ -355,37 +355,6 @@
                     </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
 
-                <!-- Secondary Actions -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_settings"
-                        style="@style/Widget.Roadstr.Button.Outlined"
-                        android:layout_width="0dp"
-                        android:layout_height="56dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:text="@string/settings"
-                        app:icon="@drawable/ic_settings"
-                        app:iconGravity="textStart"
-                        app:iconSize="18dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_key_management"
-                        style="@style/Widget.Roadstr.Button.Outlined"
-                        android:layout_width="0dp"
-                        android:layout_height="56dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:text="Keys"
-                        app:icon="@drawable/ic_key"
-                        app:iconGravity="textStart"
-                        app:iconSize="18dp" />
-                </LinearLayout>
 
                 <!-- Events Section Header -->
                 <LinearLayout

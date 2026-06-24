@@ -7,6 +7,9 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.location.LocationManager
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.RelativeSizeSpan
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -58,6 +61,15 @@ class ReportDialogActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    /** Button label with an enlarged emoji on the first line above the type name. */
+    private fun typeLabel(type: EventType): CharSequence {
+        val emoji = getEmoji(type)
+        val text = "$emoji\n${type.displayName}"
+        return SpannableString(text).apply {
+            setSpan(RelativeSizeSpan(1.8f), 0, emoji.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+    }
+
     private fun getEmoji(type: EventType): String = when (type) {
         EventType.POLICE -> "\uD83D\uDC6E"
         EventType.SPEED_CAMERA -> "\uD83D\uDCF7"
@@ -92,19 +104,19 @@ class ReportDialogActivity : AppCompatActivity() {
 
             for ((index, type) in rowTypes.withIndex()) {
                 val button = MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
-                    text = "${getEmoji(type)}\n${type.displayName}"
+                    text = typeLabel(type)
                     minWidth = 0
                     minimumWidth = 0
-                    minHeight = (80 * density).toInt()
-                    minimumHeight = (80 * density).toInt()
+                    minHeight = (104 * density).toInt()
+                    minimumHeight = (104 * density).toInt()
                     cornerRadius = (16 * density).toInt()
                     setPadding(
-                        (12 * density).toInt(),
-                        (12 * density).toInt(),
-                        (12 * density).toInt(),
-                        (12 * density).toInt()
+                        (16 * density).toInt(),
+                        (16 * density).toInt(),
+                        (16 * density).toInt(),
+                        (16 * density).toInt()
                     )
-                    textSize = 11f
+                    textSize = 14f
                     maxLines = 3
                     insetTop = 0
                     insetBottom = 0

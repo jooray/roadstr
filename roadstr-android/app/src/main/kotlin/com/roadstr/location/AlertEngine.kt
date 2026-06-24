@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import com.roadstr.model.RoadEvent
 import com.roadstr.storage.EventCache
 import com.roadstr.storage.Settings
+import com.roadstr.util.UnitFormatter
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.*
@@ -116,7 +117,7 @@ class AlertEngine(
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_alert)
             .setContentTitle("${event.type.displayName} ahead")
-            .setContentText("${distance.toInt()}m away")
+            .setContentText("${UnitFormatter.formatDistanceMeters(distance, settings.unitSystem)} away")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()

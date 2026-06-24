@@ -85,26 +85,32 @@ class MainActivity : AppCompatActivity() {
         binding.cardReport.setOnClickListener {
             startActivity(Intent(this, ReportDialogActivity::class.java))
         }
+    }
 
-        // Settings button
-        binding.btnSettings.setOnClickListener {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, SettingsFragment())
-                .addToBackStack(null)
-                .commit()
-            binding.mainContent.visibility = View.GONE
-            binding.fragmentContainer.visibility = View.VISIBLE
-        }
+    override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
 
-        // Keys button
-        binding.btnKeyManagement.setOnClickListener {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, KeyManagementFragment())
-                .addToBackStack(null)
-                .commit()
-            binding.mainContent.visibility = View.GONE
-            binding.fragmentContainer.visibility = View.VISIBLE
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean = when (item.itemId) {
+        R.id.action_settings -> {
+            showFragment(SettingsFragment())
+            true
         }
+        R.id.action_keys -> {
+            showFragment(KeyManagementFragment())
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
+    }
+
+    private fun showFragment(fragment: androidx.fragment.app.Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+        binding.mainContent.visibility = View.GONE
+        binding.fragmentContainer.visibility = View.VISIBLE
     }
 
     override fun onBackPressed() {

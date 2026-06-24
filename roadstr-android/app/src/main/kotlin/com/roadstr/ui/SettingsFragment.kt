@@ -6,6 +6,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.preference.*
 import com.roadstr.RoadstrApplication
 import com.roadstr.model.EventType
+import com.roadstr.util.UnitFormatter
+import com.roadstr.util.UnitSystem
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -16,6 +18,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val context = preferenceManager.context
         val screen = preferenceManager.createPreferenceScreen(context)
+
+        // Display
+        val displayCategory = PreferenceCategory(context).apply {
+            title = "Display"
+        }
+        screen.addPreference(displayCategory)
 
         // Relay management
         val relayCategory = PreferenceCategory(context).apply {
@@ -54,11 +62,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
             min = 100
             max = 2000
             value = app.settings.alertDistance
-            summary = "${app.settings.alertDistance}m"
+            summary = UnitFormatter.formatDistanceMeters(app.settings.alertDistance.toDouble(), app.settings.unitSystem)
             setOnPreferenceChangeListener { pref, newValue ->
                 val dist = newValue as Int
                 app.settings.alertDistance = dist
-                pref.summary = "${dist}m"
+                pref.summary = UnitFormatter.formatDistanceMeters(dist.toDouble(), app.settings.unitSystem)
                 true
             }
         }
@@ -91,17 +99,39 @@ class SettingsFragment : PreferenceFragmentCompat() {
         screen.addPreference(speedCategory)
 
         val speedThreshold = SeekBarPreference(context).apply {
-            title = "Speed Threshold (km/h)"
-            summary = "Switch to wider geohash above this speed"
+            title = "Speed Threshold"
+            summary = speedThresholdSummary(app.settings.querySpeedThreshold)
             min = 40
             max = 150
             value = app.settings.querySpeedThreshold
-            setOnPreferenceChangeListener { _, newValue ->
-                app.settings.querySpeedThreshold = newValue as Int
+            setOnPreferenceChangeListener { pref, newValue ->
+                val kmh = newValue as Int
+                app.settings.querySpeedThreshold = kmh
+                pref.summary = speedThresholdSummary(kmh)
                 true
             }
         }
         speedCategory.addPreference(speedThreshold)
+
+        // Units selector (added to the Display category at the top of the screen).
+        // References the seek bars above so their summaries refresh immediately on change.
+        val unitsPref = ListPreference(context).apply {
+            key = "unit_system"
+            title = "Units"
+            entries = arrayOf("Metric (m, km/h)", "Imperial (ft/mi, mph)")
+            entryValues = arrayOf("metric", "imperial")
+            value = app.settings.unitSystem.name.lowercase()
+            summary = "%s"
+            setOnPreferenceChangeListener { _, newValue ->
+                app.settings.unitSystem = UnitSystem.fromStored(newValue as String)
+                alertDistance.summary = UnitFormatter.formatDistanceMeters(
+                    app.settings.alertDistance.toDouble(), app.settings.unitSystem
+                )
+                speedThreshold.summary = speedThresholdSummary(app.settings.querySpeedThreshold)
+                true
+            }
+        }
+        displayCategory.addPreference(unitsPref)
 
         // Event type visibility
         val typesCategory = PreferenceCategory(context).apply {
@@ -148,6 +178,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         preferenceScreen = screen
     }
+
+    private fun speedThresholdSummary(kmh: Int): String =
+        "${UnitFormatter.formatSpeedKmh(kmh, app.settings.unitSystem)} · switch to wider geohash above this speed"
 
     private fun showRelayDialog() {
         val relays = app.settings.relays.toMutableList()
