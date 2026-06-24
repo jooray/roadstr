@@ -4,3 +4,6 @@
 CLAUDE.md
 AGENTS.md
 .claude/
+
+# Local reference material (NIPs, OsmAnd docs) — not part of the repo
+reference/
